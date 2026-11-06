@@ -1,27 +1,43 @@
-import org.junit.*;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
-import play.mvc.*;
-import play.test.*;
+import org.junit.Test;
+import play.inject.guice.GuiceApplicationBuilder;
+import play.test.TestServer;
 
-import static play.test.Helpers.*;
 import static org.junit.Assert.*;
-
-import static org.fluentlenium.core.filter.FilterConstructor.*;
+import static play.test.Helpers.*;
 
 public class IntegrationTest {
-
-    /**
-     * add your integration test here
-     * in this example we just check if the welcome page is being shown
-     */
     @Test
-    public void test() {
-        running(testServer(3333, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
-            browser.goTo("http://localhost:3333");
-            assertTrue(browser.pageSource().contains("Your new application is ready."));
-            browser.goTo("http://localhost:3333/Home");
-            assertTrue(browser.pageSource().contains("Your new application is ready."));
+    public void routesWorkWithScala3() {
+        TestServer server = testServer(0, new GuiceApplicationBuilder().build());
+        running(server, () -> {
+            HttpClient client = HttpClient.newHttpClient();
+            String baseUrl = "http://localhost:" + server.getRunningHttpPort().getAsInt();
+            for (String path : new String[] {"/", "/Home"}) {
+                HttpResponse<String> response = get(client, baseUrl + path);
+                assertEquals(200, response.statusCode());
+                assertTrue(response.body().contains("Your new application is ready."));
+            }
+            assertEquals("0", get(client, baseUrl + "/count").body());
+            assertEquals("1", get(client, baseUrl + "/count").body());
+            HttpResponse<String> message = get(client, baseUrl + "/message");
+            assertEquals(200, message.statusCode());
+            assertEquals("Hi!", message.body());
+            assertEquals(200, get(client, baseUrl + "/assets/stylesheets/main.css").statusCode());
+            assertEquals(404, get(client, baseUrl + "/missing").statusCode());
         });
     }
 
+    private static HttpResponse<String> get(HttpClient client, String url) {
+        try {
+            return client.send(HttpRequest.newBuilder(URI.create(url)).GET().build(),
+                    HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new AssertionError("Request failed: " + url, e);
+        }
+    }
 }

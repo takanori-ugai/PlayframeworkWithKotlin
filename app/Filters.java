@@ -32,14 +32,14 @@ public class Filters implements HttpFilters {
     }
 
     @Override
-    public EssentialFilter[] filters() {
+    public java.util.List<EssentialFilter> getFilters() {
       // Use the example filter if we're running development mode. If
       // we're running in production or test mode then don't use any
       // filters at all.
       if (env.mode().equals(Mode.DEV)) {
-          return new EssentialFilter[] { exampleFilter };
+          return java.util.List.of(exampleFilter);
       } else {
-         return new EssentialFilter[] {};
+         return java.util.List.of();
       }
     }
 

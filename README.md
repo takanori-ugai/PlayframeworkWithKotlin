@@ -31,6 +31,26 @@ To run only the tests and their required compilation steps:
 ./mvnw test
 ```
 
+## Formatting
+
+Spotless checks Java sources in `app/`, `test/`, and `build-support/` using
+Google Java Format. The formatter version is pinned for consistent results on
+JDK 17 and newer. Generated files under `target/` are excluded.
+
+Apply formatting:
+
+```sh
+./mvnw spotless:apply
+```
+
+Check formatting without changing files:
+
+```sh
+./mvnw spotless:check
+```
+
+`./mvnw clean verify` also runs the formatting check, including in CI.
+
 ## Scala 3 build
 
 Maven generates Scala sources from `app/views/*.scala.html` using the official

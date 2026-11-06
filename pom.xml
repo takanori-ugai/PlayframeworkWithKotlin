@@ -15,6 +15,8 @@
         <jar.plugin.version>3.4.2</jar.plugin.version>
         <surefire.plugin.version>3.5.4</surefire.plugin.version>
         <kotlin.version>2.4.21</kotlin.version>
+        <spotless.version>3.11.0</spotless.version>
+        <google-java-format.version>1.28.0</google-java-format.version>
     </properties>
     <!-- Maven uses nearest-wins resolution; pin both Scala library artifacts. -->
     <dependencyManagement>
@@ -93,6 +95,32 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <java>
+                        <includes>
+                            <include>app/**/*.java</include>
+                            <include>test/**/*.java</include>
+                            <include>build-support/**/*.java</include>
+                        </includes>
+                        <!-- Pin a formatter that also runs on the minimum supported JDK 17. -->
+                        <googleJavaFormat>
+                            <version>${google-java-format.version}</version>
+                            <style>GOOGLE</style>
+                        </googleJavaFormat>
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>check-formatting</id>
+                        <phase>verify</phase>
+                        <goals><goal>check</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>

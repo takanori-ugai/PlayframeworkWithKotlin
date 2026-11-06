@@ -31,6 +31,7 @@ public class Filters implements HttpFilters {
         this.exampleFilter = exampleFilter;
     }
 
+    /** Returns the example filter in DEV mode, and no filters in TEST or PROD mode. */
     @Override
     public java.util.List<EssentialFilter> getFilters() {
       // Use the example filter if we're running development mode. If

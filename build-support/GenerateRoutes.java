@@ -6,6 +6,10 @@ import scala.jdk.javaapi.CollectionConverters;
 
 /** Invokes Play's routes compiler during Maven generate-sources. */
 class GenerateRoutes {
+    /**
+     * Generates forward and reverse routes, failing the build on invalid route definitions.
+     * @param args the routes file and generated-source output directory, in that order
+     */
     public static void main(String[] args) {
         var imports = CollectionConverters.asScala(List.of("controllers.Assets.Asset")).toSeq();
         var task = new RoutesCompiler.RoutesCompilerTask(

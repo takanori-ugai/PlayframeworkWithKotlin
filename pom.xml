@@ -17,6 +17,7 @@
         <kotlin.version>2.4.21</kotlin.version>
         <spotless.version>3.11.0</spotless.version>
         <google-java-format.version>1.28.0</google-java-format.version>
+        <ktlint.version>1.8.0</ktlint.version>
     </properties>
     <!-- Maven uses nearest-wins resolution; pin both Scala library artifacts. -->
     <dependencyManagement>
@@ -112,6 +113,19 @@
                             <style>GOOGLE</style>
                         </googleJavaFormat>
                     </java>
+                    <kotlin>
+                        <includes>
+                            <include>app/**/*.kt</include>
+                            <include>test/**/*.kt</include>
+                            <include>build-support/**/*.kt</include>
+                        </includes>
+                        <ktlint>
+                            <version>${ktlint.version}</version>
+                            <editorConfigOverride>
+                                <ktlint_code_style>ktlint_official</ktlint_code_style>
+                            </editorConfigOverride>
+                        </ktlint>
+                    </kotlin>
                 </configuration>
                 <executions>
                     <execution>

@@ -33,9 +33,10 @@ To run only the tests and their required compilation steps:
 
 ## Formatting
 
-Spotless checks Java sources in `app/`, `test/`, and `build-support/` using
-Google Java Format. The formatter version is pinned for consistent results on
-JDK 17 and newer. Generated files under `target/` are excluded.
+Spotless checks Java sources using Google Java Format and Kotlin sources using
+ktlint (`ktlint_official` style) in `app/`, `test/`, and `build-support/`.
+Both formatter versions are pinned for consistent results on JDK 17 and newer.
+Generated files under `target/` are excluded.
 
 Apply formatting:
 

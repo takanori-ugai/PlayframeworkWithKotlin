@@ -19,7 +19,8 @@ public class IntegrationTest {
   @Test
   public void routesWorkWithScala3() throws IOException {
     String expectedStylesheet =
-        Files.readString(Path.of("public/stylesheets/main.css"), StandardCharsets.UTF_8);
+        Files.readString(
+            Path.of("src/main/resources/public/stylesheets/main.css"), StandardCharsets.UTF_8);
     TestServer server = testServer(0, new GuiceApplicationBuilder().build());
     running(
         server,

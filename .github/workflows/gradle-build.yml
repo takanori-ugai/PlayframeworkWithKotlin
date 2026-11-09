@@ -1,4 +1,4 @@
-name: Maven CI
+name: Gradle CI
 
 on:
   push:
@@ -21,13 +21,13 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-          cache: 'maven'
+          cache: 'gradle'
       - name: Build and test
-        run: ./mvnw --batch-mode --no-transfer-progress clean verify
+        run: ./gradlew --no-daemon clean build
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: test-reports
-          path: target/surefire-reports/
+          path: build/test-results/test/
           if-no-files-found: ignore

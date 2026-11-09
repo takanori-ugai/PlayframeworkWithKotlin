@@ -4,7 +4,7 @@ import play.routes.compiler.InjectedRoutesGenerator$;
 import play.routes.compiler.RoutesCompiler;
 import scala.jdk.javaapi.CollectionConverters;
 
-/** Invokes Play's routes compiler during Maven generate-sources. */
+/** Invokes Play's routes compiler during Gradle source generation. */
 class GenerateRoutes {
   /**
    * Generates forward and reverse routes, failing the build on invalid route definitions.

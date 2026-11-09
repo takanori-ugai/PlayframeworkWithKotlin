@@ -1,2 +1,5 @@
 /target/
 /logs/
+/build/
+/.gradle/
+/.gradle-home/

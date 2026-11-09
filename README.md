@@ -47,6 +47,9 @@ The report combines coverage from the test JVM and the standalone Fat JAR JVMs
 running in DEV and PROD. It covers handwritten Java and Kotlin application code;
 generated routes and Twirl templates are excluded. No minimum coverage threshold
 is enforced. CI uploads the HTML and XML reports as the `coverage-reports` artifact.
+CI also sends the XML report to Codecov using the repository secret `CODECOV_TOKEN`
+and publishes JUnit results, including passed tests, as a GitHub check. For pull
+requests from forks, JUnit reporting uses annotations without creating a check.
 
 ## Fat JAR
 

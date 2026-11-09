@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  checks: write
 
 jobs:
   build:
@@ -24,6 +25,20 @@ jobs:
           cache: 'gradle'
       - name: Build and test
         run: ./gradlew --no-daemon clean build
+      - name: Upload coverage to Codecov
+        if: (success() || failure()) && hashFiles('build/reports/jacoco/test/jacocoTestReport.xml') != ''
+        uses: codecov/codecov-action@v7.1.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: build/reports/jacoco/test/jacocoTestReport.xml
+          slug: takanori-ugai/PlayframeworkWithKotlin
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v6.6.2
+        if: success() || failure()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          include_passed: true
+          annotate_only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
       - name: Upload test reports
         if: always()
         uses: actions/upload-artifact@v7

@@ -41,6 +41,14 @@ public class FatJarTest {
             List.of(
                 Path.of(System.getProperty("java.home"), "bin", "java").toString(),
                 "-Dhttp.port=0"));
+    String agent = System.getProperty("jacoco.agent.path");
+    if (agent != null) {
+      Path coverage =
+          Path.of(
+              System.getProperty("jacoco.output.directory"),
+              production ? "fatJar-prod.exec" : "fatJar-dev.exec");
+      command.add("-javaagent:" + agent + "=destfile=" + coverage + ",append=false");
+    }
     if (production) {
       Path config = workingDirectory.resolve("application-prod.conf");
       Files.writeString(

@@ -31,6 +31,23 @@ To run only the tests and their required compilation steps:
 ./gradlew test
 ```
 
+## Code coverage
+
+`./gradlew test` and `./gradlew build` automatically generate JaCoCo coverage
+reports after running the tests. You can also generate them explicitly:
+
+```sh
+./gradlew jacocoTestReport
+```
+
+- HTML: `build/reports/jacoco/test/html/index.html`
+- XML: `build/reports/jacoco/test/jacocoTestReport.xml`
+
+The report combines coverage from the test JVM and the standalone Fat JAR JVMs
+running in DEV and PROD. It covers handwritten Java and Kotlin application code;
+generated routes and Twirl templates are excluded. No minimum coverage threshold
+is enforced. CI uploads the HTML and XML reports as the `coverage-reports` artifact.
+
 ## Fat JAR
 
 Build a runnable JAR containing the application and all runtime dependencies:

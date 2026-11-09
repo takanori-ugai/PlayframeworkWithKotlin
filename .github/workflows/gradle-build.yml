@@ -31,3 +31,10 @@ jobs:
           name: test-reports
           path: build/test-results/test/
           if-no-files-found: ignore
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-reports
+          path: build/reports/jacoco/test/
+          if-no-files-found: ignore

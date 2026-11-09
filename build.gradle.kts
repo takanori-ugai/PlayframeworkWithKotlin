@@ -1,5 +1,6 @@
 plugins {
     application
+    jacoco
     id("com.gradleup.shadow") version "9.6.1"
     scala
     id("org.playframework.twirl") version "2.1.0-M9"
@@ -13,10 +14,17 @@ version = "1.0-SNAPSHOT"
 val playVersion = "3.0.12"
 val scalaVersion = "3.10.0"
 val twirlVersion = "2.0.9"
+val jacocoVersion = "0.8.14"
+
+jacoco { toolVersion = jacocoVersion }
 
 repositories { mavenCentral() }
 
 val generators = configurations.create("generators")
+val jacocoRuntime = configurations.create("jacocoRuntime") {
+    isCanBeConsumed = false
+    isTransitive = false
+}
 configurations.configureEach {
     // Zinc runs on its own Scala 2.13 runtime, independently of the application.
     if (name != "zinc") {
@@ -37,6 +45,7 @@ dependencies {
     add("twirl", "org.playframework.twirl:twirl-compiler_3:$twirlVersion")
     testImplementation("org.playframework:play-test_3:$playVersion")
     testImplementation("junit:junit:4.13.2")
+    add(jacocoRuntime.name, "org.jacoco:org.jacoco.agent:$jacocoVersion:runtime")
 }
 
 java {
@@ -98,11 +107,37 @@ tasks.assemble { dependsOn(tasks.shadowJar) }
 tasks.test {
     dependsOn(tasks.shadowJar)
     inputs.file(tasks.shadowJar.flatMap { it.archiveFile })
+    inputs.files(jacocoRuntime)
+    outputs.files(
+        layout.buildDirectory.file("jacoco/fatJar-dev.exec"),
+        layout.buildDirectory.file("jacoco/fatJar-prod.exec"),
+    )
     doFirst {
         systemProperty("fatJar.path", tasks.shadowJar.get().archiveFile.get().asFile.absolutePath)
+        val coverageDirectory = layout.buildDirectory.dir("jacoco").get().asFile
+        delete(fileTree(coverageDirectory) { include("fatJar-*.exec") })
+        systemProperty("jacoco.agent.path", jacocoRuntime.singleFile.absolutePath)
+        systemProperty("jacoco.output.directory", coverageDirectory.absolutePath)
     }
     useJUnit()
     systemProperty("expected.scala.version", scalaVersion)
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    executionData.setFrom(layout.buildDirectory.file("jacoco/test.exec"))
+    executionData(fileTree(layout.buildDirectory.dir("jacoco")) { include("fatJar-*.exec") })
+    // Report handwritten application code, excluding generated routes and Twirl templates.
+    classDirectories.setFrom(sourceSets.main.get().output.classesDirs.asFileTree.matching {
+        exclude("router/**", "routes/**", "views/**", "controllers/Reverse*", "controllers/routes*", "controllers/javascript/**")
+    })
+    sourceDirectories.setFrom(files("src/main/java", "src/main/kotlin"))
+    reports {
+        html.required.set(true)
+        xml.required.set(true)
+        csv.required.set(false)
+    }
 }
 application { mainClass.set("DevServer") }
 

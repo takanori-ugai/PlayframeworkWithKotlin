@@ -9,6 +9,12 @@ import scala.Option;
 
 /** Runs the compiled application in the mode selected at startup, without hot reloading. */
 public final class DevServer {
+  /**
+   * Starts the server in DEV or PROD mode and waits until the process is interrupted.
+   *
+   * @param args unused command-line arguments; configuration uses JVM system properties
+   * @throws InterruptedException if interrupted while waiting for shutdown
+   */
   public static void main(String[] args) throws InterruptedException {
     String requestedMode = System.getProperty("play.mode", "DEV").trim().toUpperCase(Locale.ROOT);
     Mode mode =
@@ -24,11 +30,12 @@ public final class DevServer {
             new File("."),
             Option.apply(Integer.getInteger("http.port", 9000)),
             Option.empty(),
-            System.getProperty("http.address", "0.0.0.0"),
+            System.getProperty("http.address", "127.0.0.1"),
             application.asScala().mode(),
             System.getProperties());
     var server = NettyServer.fromApplication(application.asScala(), config);
     Runtime.getRuntime().addShutdownHook(new Thread(server::stop));
+    System.out.println("PLAY_HTTP_PORT=" + server.mainAddress().getPort());
     new CountDownLatch(1).await();
   }
 }

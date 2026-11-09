@@ -9,6 +9,7 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.regex.Pattern;
 import org.junit.Test;
 import play.Mode;
 import play.inject.guice.GuiceApplicationBuilder;
@@ -31,6 +32,19 @@ public class IntegrationTest {
             HttpResponse<String> response = get(client, baseUrl + path);
             assertEquals(200, response.statusCode());
             assertTrue(response.body().contains("Your new application is ready."));
+            var stylesheets =
+                Pattern.compile("<link\\b[^>]*rel=\"stylesheet\"[^>]*href=\"([^\"]+)\"")
+                    .matcher(response.body());
+            int stylesheetCount = 0;
+            while (stylesheets.find()) {
+              String stylesheetUrl =
+                  URI.create(baseUrl + path).resolve(stylesheets.group(1)).toString();
+              HttpResponse<String> stylesheet = get(client, stylesheetUrl);
+              assertEquals(stylesheetUrl, 200, stylesheet.statusCode());
+              assertEquals(expectedStylesheet, stylesheet.body());
+              stylesheetCount++;
+            }
+            assertTrue("Page should link to a stylesheet", stylesheetCount > 0);
           }
           assertEquals("0", get(client, baseUrl + "/count").body());
           assertEquals("1", get(client, baseUrl + "/count").body());

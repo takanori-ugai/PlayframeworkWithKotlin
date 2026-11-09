@@ -43,19 +43,21 @@ java -jar build/libs/play-java-1.0-SNAPSHOT-all.jar
 `./gradlew build` also creates this Fat JAR. It includes templates, configuration,
 static assets, merged service descriptors, and Play/Pekko configuration fragments.
 The launcher defaults to DEV mode, like `./gradlew run`, and listens on
-`0.0.0.0:9000` (all IPv4 interfaces). Other PCs can connect using
-`http://<server-LAN-IP>:9000`; allow TCP port 9000 through the server firewall.
+`127.0.0.1:9000` (loopback only).
 Override the port with a JVM property:
 
 ```sh
 java -Dhttp.port=9001 -jar build/libs/play-java-1.0-SNAPSHOT-all.jar
 ```
 
-To accept connections only from the same PC, override the bind address:
+To accept connections from other PCs, explicitly override the bind address:
 
 ```sh
-java -Dhttp.address=127.0.0.1 -jar build/libs/play-java-1.0-SNAPSHOT-all.jar
+java -Dhttp.address=0.0.0.0 -jar build/libs/play-java-1.0-SNAPSHOT-all.jar
 ```
+
+Other PCs can then connect using `http://<server-LAN-IP>:9000`; allow TCP port
+9000 through the server firewall. DEV diagnostic pages are visible to those clients.
 
 The JAR can be launched from any working directory with JDK 17 or newer.
 The test suite verifies it in a separate JVM outside the project directory.
@@ -141,7 +143,8 @@ Start the compiled application in development mode:
 ./gradlew run
 ```
 
-Open http://localhost:9000 locally, or `http://<server-LAN-IP>:9000` from another PC.
+Open http://localhost:9000 locally. Remote access requires the explicit
+`http.address` override described above.
 Stop the server with `Ctrl+C`.
 After source changes, stop the server and run the command again; this Gradle
 launcher does not provide hot reloading.

@@ -47,6 +47,10 @@ blockquote {
   border-left: 4px solid #176b45;
 }
 
+pre {
+  white-space: pre-wrap;
+}
+
 code {
   overflow-wrap: anywhere;
 }

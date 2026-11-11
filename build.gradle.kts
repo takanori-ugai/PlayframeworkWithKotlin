@@ -156,7 +156,8 @@ application { mainClass.set("DevServer") }
 spotless {
     java {
         target("src/**/*.java", "build-support/**/*.java")
-        googleJavaFormat("1.28.0")
+        // Spotless runs on Gradle's JVM; Java 25 requires google-java-format 1.30.0+.
+        googleJavaFormat(if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_25)) "1.30.0" else "1.28.0")
     }
     kotlin {
         target("src/**/*.kt", "build-support/**/*.kt")

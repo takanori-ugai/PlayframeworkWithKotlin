@@ -14,7 +14,7 @@ jobs:
     name: Build and test (JDK ${{ matrix.java_version }})
     strategy:
       matrix:
-        java_version: [17, 21]
+        java_version: [17, 21, 25]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:

@@ -90,6 +90,18 @@ tasks.compileScala {
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.release.set(17)
+    options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:removal"))
+    if (providers.gradleProperty("javaWarningsAsErrors").map(String::toBoolean).getOrElse(false)) {
+        options.compilerArgs.add("-Werror")
+    }
+}
+// Zinc also compiles Java sources during joint Java/Scala compilation.
+tasks.withType<org.gradle.api.tasks.scala.ScalaCompile>().configureEach {
+    options.release.set(17)
+    options.compilerArgs.addAll(listOf("-Xlint:deprecation", "-Xlint:removal"))
+    if (providers.gradleProperty("javaWarningsAsErrors").map(String::toBoolean).getOrElse(false)) {
+        options.compilerArgs.add("-Werror")
+    }
 }
 tasks.shadowJar {
     archiveClassifier.set("all")

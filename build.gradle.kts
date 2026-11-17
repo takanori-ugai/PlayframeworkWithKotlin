@@ -12,7 +12,7 @@ group = "com.example"
 version = "1.0-SNAPSHOT"
 
 val playVersion = "3.0.12"
-val scalaVersion = "3.10.0"
+val scalaVersion = "3.10.1"
 val twirlVersion = "2.0.9"
 val jacocoVersion = "0.8.14"
 
